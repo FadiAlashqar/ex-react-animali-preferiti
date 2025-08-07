@@ -10,26 +10,57 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script type="text/babel">
+        function Modal({
+            title,
+            content,
+            show = false,
+            list,
+            onClose = () => { },
+            onConfirm = () => { }
+        }) {
+            return show && ReactDOM.createPortal(
+                <div className="modal-container">
+                    <div className="modal">
+                        <h2>{title}</h2>
+                        {content}
+                        <ul>
+                            <li>
+                                {list}
+                            </li>
+                        </ul>
+                        <button onClick={onConfirm}>Conferma</button>
+                        <button onClick={onClose}>Annulla</button>
+                    </div>
+                </div>,
+                document.body
+            )
+        }
         const ReactApp = () => {
             const { useState } = React
-            const animalsChoices = ["Cane", "Gatto", "Pappagallo", "Cavallo", "Panda"];
-            const [animals, setAnimals] = useState([])
-            const addAnimal = () => {
-                const num = Math.floor(Math.random() * (4 - 0 + 1)) + 0
-                setAnimals([...animals, animalsChoices[num]])
-
-            }
+            const [show, setShow] = useState(false)
+            const [text, setText] = useState("")
+            const [animal, setAnimal] = useState("")
             return (
                 <div>
-                    <button onClick={addAnimal}>Aggiungi Animale</button>
-                    <details>
-                        <summary><h2>Animali</h2></summary>
-                        <ul>
-                            {animals.map((animal, i) => {
-                                return <li key={i}>{animal}</li>
-                            })}
-                        </ul>
-                    </details>
+                    <button onClick={() => setShow(true)}>Aggiungi Animale</button>
+                    <Modal
+                        title="Lista Animali"
+                        content={<input
+                            type="text"
+                            placeholder="Scrivi il nome di un animale"
+                            value={text}
+                            onChange={(e) => setText(e.target.value)}
+
+                        />}
+                        show={show}
+                        onClose={() => setShow(false)}
+                        onConfirm={() => {
+                            setAnimal(text),
+                                setText(""),
+                                setShow(false)
+                        }}
+                        list={animal}
+                    />
                 </div>
 
             )
